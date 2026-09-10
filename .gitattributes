@@ -1,0 +1,7 @@
+# 统一换行符，避免 Windows 下 CRLF 污染 Markdown 导出与 YAML 工作流
+* text=auto eol=lf
+*.py   text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+*.txt  text eol=lf
