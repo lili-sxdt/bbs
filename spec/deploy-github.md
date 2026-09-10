@@ -13,6 +13,24 @@
 
 ---
 
+## ⚠️ 路径口径（最容易踩的坑）
+
+**本 GitHub 仓库的根 = 工作区里的 `projects/bbs/` 目录本身。** 所以同一件事有两种路径写法：
+
+| 场景 | 命令 |
+|---|---|
+| 在**工作区**（`D:\DSH`）里跑 | `python projects/bbs/scripts/validate_posts.py` |
+| 在**仓库根**（CI runner / 克隆下来的仓库）里跑 | `python scripts/validate_posts.py` |
+
+**Actions 工作流里必须用第二种**（不带 `projects/bbs/` 前缀）。
+首次推送时这里踩过一次坑：日志报
+`can't open file '/home/runner/work/bbs/bbs/projects/bbs/scripts/validate_posts.py': [Errno 2] No such file`，
+就是路径多了一层前缀，已修正。
+
+推送到 GitHub 的一律是**不带前缀**的版本；工作区里的 `README.md` 用的是带前缀的版本（因为工作区根是 `D:\DSH`）。
+
+---
+
 ## 第 1 步：打开 Discussions（必须在网页上做）
 
 我无法代做：开启 Discussions 需要仓库 **admin** 权限，而当前没有任何凭据可用。

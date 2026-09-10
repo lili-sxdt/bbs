@@ -26,7 +26,7 @@ jobs:
         run: |
           python - <<'PY' >> "$GITHUB_OUTPUT"
           import json, datetime, pathlib
-          q = json.loads(pathlib.Path("projects/bbs/data/open_questions.json").read_text(encoding="utf-8"))
+          q = json.loads(pathlib.Path("data/open_questions.json").read_text(encoding="utf-8"))
           tasks = q["tasks"]
           open_tasks = [t for t in tasks if t["status"] == "open"]
           today = datetime.date.today()
@@ -61,7 +61,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # 不指定 label：仓库里未必存在 bbs/queue-health 标签，指定会直接报错
           gh issue create \
             --title "bbs 队列巡检异常（$(date +%F)）" \
-            --body-file bbs-queue-report.md \
-            --label "bbs,queue-health" || true
+            --body-file bbs-queue-report.md || true

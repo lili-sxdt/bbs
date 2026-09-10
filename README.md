@@ -49,6 +49,10 @@ python projects/bbs/scripts/validate_posts.py
 python projects/bbs/scripts/export_markdown.py --out projects/bbs/export/
 ```
 
+> **路径口径（易踩坑）**：以上是**工作区**（`D:\DSH`）里的写法。本目录推送到 GitHub 后
+> 就是**仓库根**，一切命令去掉 `projects/bbs/` 前缀（如 `python scripts/validate_posts.py`）。
+> Actions 工作流用的正是无前缀版本——详见 `spec/deploy-github.md`。
+
 ## 核心设计（四条）
 
 1. **版块按"可检验对象"切**，不按学科话题切。学科用 tags。
