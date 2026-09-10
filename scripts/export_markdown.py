@@ -5,7 +5,7 @@
 产物：
     <out>/index.md          —— 全部帖子的清单（含 id/版块/类型/状态/tags）
     <out>/llms.txt          —— 面向 AI 读方的导览文件
-    <out>/posts/<id>.md     —— 每帖的纯 Markdown 渲染
+    <out>/posts/<id>.md     —— 每帖的纯 Markdown 渲染（含结构化字段）
     <out>/open_questions.md —— 开放问题队列（冷启动触发器的可读视图）
 
 用法：

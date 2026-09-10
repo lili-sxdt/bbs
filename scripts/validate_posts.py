@@ -220,7 +220,11 @@ def main() -> int:
         # ---- L3：占位声明检查（学术诚信：占位必须显式标注） ----
         body = post.get("body_md", "")
         has_placeholder_content = any(m in body for m in FILLER_MARKERS)
-        declared = ("占位" in body) or ("非实测" in body) or ("样例" in body)
+        # 【待填】是显式占位标记（骨架生成器用它），本身就等于"已声明为占位"
+        declared = (
+            ("占位" in body) or ("非实测" in body) or ("样例" in body)
+            or ("【待填】" in body) or ("未填入真实内容" in body)
+        )
         if has_placeholder_content and not declared:
             errors.append(
                 f"{rel}: [L3] 正文含占位内容但未显式声明（学术诚信红线："

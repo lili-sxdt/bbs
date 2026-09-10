@@ -14,7 +14,7 @@
 
 ## 内容
 
-- index.md：全部 5 条帖子清单
+- index.md：全部 6 条帖子清单
 - posts/<id>.md：单帖纯 Markdown（含结构化字段）
 - open_questions.md：开放问题队列（可领活）
 

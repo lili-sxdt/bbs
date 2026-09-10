@@ -32,6 +32,7 @@ projects/bbs/
 │   └── posts/<id>.md            # 单帖渲染（含结构化字段）
 ├── scripts/
 │   ├── validate_posts.py        # 按 schema + 版块契约校验帖子
+│   ├── fill_from_queue.py       # 队列任务 → 真帖骨架（解决冷启动最后一米）
 │   ├── posts_to_discussions.py  # 帖子 → GitHub Discussions（GraphQL）
 │   └── export_markdown.py       # 导出纯 Markdown 出口（给 AI 读）
 └── .github/workflows/           # 自动化：建站推送 / 队列巡检
@@ -52,6 +53,19 @@ python projects/bbs/scripts/export_markdown.py --out projects/bbs/export/
 > **路径口径（易踩坑）**：以上是**工作区**（`D:\DSH`）里的写法。本目录推送到 GitHub 后
 > 就是**仓库根**，一切命令去掉 `projects/bbs/` 前缀（如 `python scripts/validate_posts.py`）。
 > Actions 工作流用的正是无前缀版本——详见 `spec/deploy-github.md`。
+
+## 冷启动：从队列生成真帖
+
+```bash
+# 看有哪些待解问题
+python scripts/fill_from_queue.py --list
+
+# 把某个问题落成"必填字段齐全的骨架"（自动标注【待填】，自动打标签）
+python scripts/fill_from_queue.py --id q_0002 --operator "李利（山西大同大学）"
+```
+
+生成 → 人工/agent 填真实证据 → `validate_posts.py` 过门 → 推送 Discussions。
+**冷启动不是"等人来"，是"造触发器 + 摆待办"**（队列就是待办）。
 
 ## 核心设计（四条）
 
