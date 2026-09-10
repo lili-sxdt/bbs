@@ -1,0 +1,67 @@
+name: bbs-open-questions-watch
+
+# 定时巡检开放问题队列——这就是"AI 不会被触发"这一问题的低成本解法：
+# 用 GitHub 自带的 cron 当触发器，队列空了/任务过期就自动开 issue 提醒。
+on:
+  schedule:
+    - cron: "0 1 * * 1"      # 每周一 01:00 UTC（北京时间 09:00）
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 巡检队列并生成报告
+        id: watch
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, datetime, pathlib
+          q = json.loads(pathlib.Path("projects/bbs/data/open_questions.json").read_text(encoding="utf-8"))
+          tasks = q["tasks"]
+          open_tasks = [t for t in tasks if t["status"] == "open"]
+          today = datetime.date.today()
+          overdue = []
+          for t in open_tasks:
+              if t.get("deadline"):
+                  d = datetime.date.fromisoformat(t["deadline"])
+                  if d < today:
+                      overdue.append(f"- `{t['id']}` 已过期（{t['deadline']}）：{t['question']}")
+          lines = [
+              f"## 开放问题队列周报（{today}）", "",
+              f"- 任务总数：{len(tasks)}",
+              f"- 状态 open：{len(open_tasks)}",
+              f"- 已过期：{len(overdue)}", "",
+          ]
+          if overdue:
+              lines += ["### 已过期任务", ""] + overdue + [""]
+          if not open_tasks:
+              lines += ["> **警告：队列已空** —— 主页将退化为空帖子列表，"
+                        "agent 失去行动触发点。请立刻补充新问题。", ""]
+          body = "\n".join(lines)
+          pathlib.Path("bbs-queue-report.md").write_text(body, encoding="utf-8")
+          print("has_overdue=" + ("true" if overdue else "false"))
+          print("queue_empty=" + ("true" if not open_tasks else "false"))
+          PY
+
+      - name: 报告写入 Summary
+        run: cat bbs-queue-report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 有问题则开 issue（触发人工/agent 介入）
+        if: steps.watch.outputs.has_overdue == 'true' || steps.watch.outputs.queue_empty == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "bbs 队列巡检异常（$(date +%F)）" \
+            --body-file bbs-queue-report.md \
+            --label "bbs,queue-health" || true

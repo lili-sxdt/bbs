@@ -1,0 +1,126 @@
+{
+  "$comment": "8 种内容类型 = 版块的原料。post_type 是帖子上的必填字段，版块只是它的默认视图。",
+  "version": "1.0.0",
+  "types": [
+    {
+      "id": "claim",
+      "name_zh": "断言",
+      "definition": "一条可被独立核查的具体结论",
+      "home_board": "claims",
+      "must_have": ["可证伪的表述", "至少一条证据", "适用范围"],
+      "skeleton": "在某条件下，X 与 Y 存在关系 Z；证据：DOI/数据/图；适用范围：品种/生态区/生育期；置信度：high|medium|low"
+    },
+    {
+      "id": "rebuttal",
+      "name_zh": "反驳",
+      "definition": "推翻或限定另一条断言",
+      "home_board": "claims",
+      "must_have": ["被反驳帖 id", "反例或统计证据", "限定后的表述"],
+      "skeleton": "帖 post_xxx 的结论在 W 条件下不成立；反例：…；建议限定为：…"
+    },
+    {
+      "id": "recomputation",
+      "name_zh": "复算",
+      "definition": "用公开数据重算他人结论",
+      "home_board": "claims",
+      "must_have": ["数据来源", "方法", "与原结果差异"],
+      "skeleton": "用 <数据> 按 <方法> 复算得 <结果>，原报 <结果>，差异 <原因假设>"
+    },
+    {
+      "id": "reproduction",
+      "name_zh": "复现报告",
+      "definition": "方法在另一数据/环境下跑的结果",
+      "home_board": "methods",
+      "must_have": ["data_profile", "params", "code_ref", "观测值 vs 期望值"],
+      "skeleton": "目标：复现 <方法>；数据特征：…；参数：…；代码：…；结果：观测 … vs 期望 …；结论：可复现/条件性可复现/不可复现"
+    },
+    {
+      "id": "method_question",
+      "name_zh": "方法提问",
+      "definition": "方法选择或参数设定上的具体疑问",
+      "home_board": "methods",
+      "must_have": ["data_profile", "已试方案", "失败现象"],
+      "skeleton": "数据特征：…；已试：…；现象：…；问：…"
+    },
+    {
+      "id": "model_report",
+      "name_zh": "建模报告",
+      "definition": "一次建模的完整可审计记录",
+      "home_board": "models",
+      "must_have": ["split_scheme", "n", "metrics", "preprocessing_order"],
+      "skeleton": "任务：…；n=…；划分：…；预处理顺序：…；指标：R2=… RMSE=… RPD=…；泄漏风险自评：…"
+    },
+    {
+      "id": "validity_challenge",
+      "name_zh": "效度质疑",
+      "definition": "质疑某模型的效度（泄漏/划分/指标误用）",
+      "home_board": "models",
+      "must_have": ["被质疑对象", "具体机制", "可验证的检验方式"],
+      "skeleton": "质疑 <对象> 存在 <泄漏/误用>；机制：…；验证方式：…"
+    },
+    {
+      "id": "dataset_release",
+      "name_zh": "数据发布",
+      "definition": "发布可复用数据集并交契约",
+      "home_board": "data",
+      "must_have": ["variable_dictionary", "units", "design", "license"],
+      "skeleton": "数据：…；变量字典：…；单位：…；设计：…；许可：…；已知局限：…"
+    },
+    {
+      "id": "data_request",
+      "name_zh": "数据求援",
+      "definition": "为特定分析请求数据",
+      "home_board": "data",
+      "must_have": ["分析目的", "所需变量与精度", "可提供的回报（署名/共引）"],
+      "skeleton": "目的：…；需变量：…；精度要求：…；回报：…"
+    },
+    {
+      "id": "deep_read",
+      "name_zh": "深度解读",
+      "definition": "一篇文献的结构化精读 + 边界判断",
+      "home_board": "literature",
+      "must_have": ["doi", "核心结论", "适用边界"],
+      "skeleton": "DOI：…；核心结论：…；证据强度：…；适用边界：…；能否迁移到我的体系：…"
+    },
+    {
+      "id": "boundary_question",
+      "name_zh": "边界提问",
+      "definition": "问某文献结论在特定条件下是否成立",
+      "home_board": "literature",
+      "must_have": ["doi", "目标条件", "担心的失效机制"],
+      "skeleton": "文献：DOI…；我的条件：…；担心：…；问：是否可迁移"
+    },
+    {
+      "id": "open_problem",
+      "name_zh": "开放问题",
+      "definition": "长期无解且值得挂榜的真问题",
+      "home_board": "openq",
+      "must_have": ["问题陈述", "为何未解", "当前 status"],
+      "skeleton": "问题：…；为何未解：…；已有尝试：…；状态：open|partial|answered"
+    },
+    {
+      "id": "progress_update",
+      "name_zh": "进展更新",
+      "definition": "对开放问题的阶段性回填",
+      "home_board": "openq",
+      "must_have": ["关联问题 id", "新增证据", "状态变化"],
+      "skeleton": "问题 q_xxx 进展：新增证据 …；状态 open → partial"
+    },
+    {
+      "id": "policy",
+      "name_zh": "规则",
+      "definition": "论坛治理规则",
+      "home_board": "meta",
+      "must_have": ["生效日期", "约束对象"],
+      "skeleton": "规则：…；生效：…；约束：…"
+    },
+    {
+      "id": "audit_log",
+      "name_zh": "审计记录",
+      "definition": "拒收/申诉/裁决的可追溯记录",
+      "home_board": "meta",
+      "must_have": ["被审计对象", "裁决", "依据条款"],
+      "skeleton": "对象：…；裁决：…；依据：…；申诉渠道：…"
+    }
+  ]
+}

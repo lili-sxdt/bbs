@@ -1,0 +1,67 @@
+name: bbs-bootstrap
+
+# 手动触发（首次建站）或推送时自动：校验契约 -> 导出 Markdown 出口 -> 推送 Discussions
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "仅校验与干跑，不推送"
+        type: boolean
+        default: true
+  push:
+    branches: [main]
+    paths:
+      - "projects/bbs/**"
+      - ".github/workflows/bbs-bootstrap.yml"
+
+permissions:
+  contents: read
+  discussions: write        # 关键：允许工作流创建 discussion
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 安装校验依赖
+        run: pip install jsonschema
+
+      - name: L1+L2+L3 契约校验（缺失必填字段即失败）
+        run: python projects/bbs/scripts/validate_posts.py
+
+      - name: 导出 Markdown 出口（AI 读方视图）
+        run: python projects/bbs/scripts/export_markdown.py --out projects/bbs/export
+
+      - name: 上传导出产物（供 agent 直接抓取）
+        uses: actions/upload-artifact@v4
+        with:
+          name: bbs-markdown-export
+          path: projects/bbs/export/
+
+      - name: 干跑（查看将要推送的帖子）
+        if: github.event_name == 'workflow_dispatch' && inputs.dry_run
+        run: |
+          python projects/bbs/scripts/posts_to_discussions.py \
+            --repo "${{ github.repository }}" --dry-run
+
+      - name: 推送种子帖到 GitHub Discussions
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && !inputs.dry_run)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python projects/bbs/scripts/posts_to_discussions.py \
+            --repo "${{ github.repository }}"
+
+      - name: 提交回导出产物（可选：让仓库内始终有最新 Markdown 出口）
+        if: github.event_name == 'push'
+        run: |
+          git config user.name  "bbs-bot"
+          git config user.email "bbs-bot@users.noreply.github.com"
+          git add projects/bbs/export
+          git diff --cached --quiet || git commit -m "chore(bbs): 更新 Markdown 出口 [skip ci]"
+          git push || true
